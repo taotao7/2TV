@@ -10,6 +10,7 @@
     "pretty": true,
     "lib": [
       "esnext"
-    ]
+    ],
+    "outDir": "./dist"
   }
 }
