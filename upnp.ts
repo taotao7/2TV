@@ -28,7 +28,6 @@ class Upnp {
 		this.discover();
 		setTimeout(() => {
 			this.client.close();
-			console.log(this.devices);
 		}, 5000);
 	}
 }
