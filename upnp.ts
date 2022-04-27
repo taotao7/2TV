@@ -1,10 +1,11 @@
-const dgram = require("dgram");
+import * as dgram from "dgram";
 
-const client = dgram.createSocket("udp4");
+class Upnp {
+	client: dgram.Socket;
 
-const header = {
-  HOST: "239.255.255.250",
-  ST: '"ssdp:all"',
-  MAN: '"ssdp:discover"',
-  MX: 3,
-};
+	constructor() {
+		this.client = dgram.createSocket("udp4");
+	}
+}
+
+const instance = new Upnp();
