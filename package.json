@@ -7,7 +7,7 @@
     "pretest": "npm run lint && tsc --noEmit",
     "dev": "tsc --watch",
     "posttest": "npm run format",
-    "lint": "eslint . --cache --fix",
+    "lint": "lint-staged",
     "format": "prettier --loglevel warn --write \"**/*.{js,css,md}\"",
     "prepare": "husky install"
   },
