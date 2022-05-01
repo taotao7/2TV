@@ -36,12 +36,11 @@ class Upnp {
 		const opts: options = Object.assign({}, options);
 		this.client = dgram.createSocket("udp4");
 		this.discoverTime = opts.discoverTime;
-	}
 
-	public getDevicesList() {
 		this.client.bind(1900, () => {
 			this.client.addMembership("239.255.255.250");
 		});
+
 		this.client.on("message", (msg, _) => {
 			const data = msg.toString();
 			if (data.includes("LOCATION")) {
@@ -51,11 +50,13 @@ class Upnp {
 				}
 			}
 		});
+	}
 
-		// Close the listener after some time to get the data obtained during the listening period
-		return new Promise((resolve, _) => {
+	// Close the listener after some time to get the data obtained during the listening period
+	public getDevicesList() {
+		return new Promise<string[]>((resolve, _) => {
 			setTimeout(() => {
-				this.client.close();
+				// this.client.close();
 				resolve(uniq(this.devices));
 			}, this.discoverTime);
 		});
@@ -126,8 +127,6 @@ class Upnp {
 
 export default Upnp;
 
-const instance = new Upnp();
-instance.getDevicesList().then((r) => console.log(r));
 // instance
 // 	.play(
 // 		"http://192.168.31.200:49152/_urn:schemas-upnp-org:service:AVTransport_control",
