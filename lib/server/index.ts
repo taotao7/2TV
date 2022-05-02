@@ -3,6 +3,7 @@ import Upnp from "../upnp";
 import * as bodyParser from "body-parser";
 import debug from "debug";
 import * as fs from "fs";
+import * as path from "path";
 
 const console = debug("app:server");
 
@@ -12,7 +13,7 @@ const app = express();
 // middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use("/", express.static("public"));
+app.use("/", express.static(path.join(__dirname, "../../public")));
 
 // get discovery devices
 app.get("/getdevices", async (_, res) => {

@@ -38,13 +38,14 @@ const upnp_1 = require("../upnp");
 const bodyParser = require("body-parser");
 const debug_1 = require("debug");
 const fs = require("fs");
+const path = require("path");
 const console = (0, debug_1.default)("app:server");
 const upnp = new upnp_1.default();
 const app = express();
 // middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use("/", express.static("public"));
+app.use("/", express.static(path.join(__dirname, "../../public")));
 // get discovery devices
 app.get("/getdevices", (_, res) =>
 	__awaiter(void 0, void 0, void 0, function* () {
