@@ -3,7 +3,7 @@ import axios from "axios";
 import * as parser from "xml2json";
 import { uniq } from "lodash";
 
-type controlServerDevices = {
+export type controlServerDevices = {
 	root?: {
 		xmlns?: string;
 		specVersion?: { marjor?: number; minor?: number };
@@ -25,6 +25,12 @@ type controlServerDevices = {
 
 type options = {
 	discoverTime: number;
+};
+
+type parserDevice = {
+	msg: string;
+	err?: any;
+	data?: any;
 };
 
 class Upnp {
@@ -62,7 +68,9 @@ class Upnp {
 		});
 	}
 
-	public async parseDeviceServer(device: string) {
+	public async parseDeviceServer(
+		device: string
+	): Promise<controlServerDevices | parserDevice> {
 		try {
 			const { data } = await axios.get(device);
 			const json: controlServerDevices = JSON.parse(parser.toJson(data));
@@ -92,9 +100,9 @@ class Upnp {
 				},
 			});
 			if (result.status === 200) {
-				return { msg: "ok" };
+				return { msg: "ok", data: JSON.parse(parser.toJson(result.data)) };
 			} else {
-				return { msg: "other", data: result };
+				return { msg: "other" };
 			}
 		} catch (e) {
 			return { msg: "fail", err: e };
@@ -118,7 +126,11 @@ class Upnp {
 						'"urn:schemas-upnp-org:service:AVTransport:1#GetMediaInfo"',
 				},
 			});
-			return { msg: "ok", data: res };
+			if (res.status === 200) {
+				return { msg: "ok", data: JSON.parse(parser.toJson(res.data)) };
+			} else {
+				return { msg: "other" };
+			}
 		} catch {
 			return { msg: "not have info" };
 		}

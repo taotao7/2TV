@@ -1,0 +1,148 @@
+"use strict";
+var __awaiter =
+	(this && this.__awaiter) ||
+	function (thisArg, _arguments, P, generator) {
+		function adopt(value) {
+			return value instanceof P
+				? value
+				: new P(function (resolve) {
+						resolve(value);
+				  });
+		}
+		return new (P || (P = Promise))(function (resolve, reject) {
+			function fulfilled(value) {
+				try {
+					step(generator.next(value));
+				} catch (e) {
+					reject(e);
+				}
+			}
+			function rejected(value) {
+				try {
+					step(generator["throw"](value));
+				} catch (e) {
+					reject(e);
+				}
+			}
+			function step(result) {
+				result.done
+					? resolve(result.value)
+					: adopt(result.value).then(fulfilled, rejected);
+			}
+			step((generator = generator.apply(thisArg, _arguments || [])).next());
+		});
+	};
+Object.defineProperty(exports, "__esModule", { value: true });
+const dgram = require("dgram");
+const axios_1 = require("axios");
+const parser = require("xml2json");
+const lodash_1 = require("lodash");
+class Upnp {
+	constructor(options = { discoverTime: 5000 }) {
+		this.devices = [];
+		const opts = Object.assign({}, options);
+		this.client = dgram.createSocket("udp4");
+		this.discoverTime = opts.discoverTime;
+		this.client.bind(1900, () => {
+			this.client.addMembership("239.255.255.250");
+		});
+		this.client.on("message", (msg, _) => {
+			const data = msg.toString();
+			if (data.includes("LOCATION")) {
+				const device = data.match(/LOCATION: (.*)\r\n/);
+				if (device) {
+					this.devices.push(device[1]);
+				}
+			}
+		});
+	}
+	// Close the listener after some time to get the data obtained during the listening period
+	getDevicesList() {
+		return new Promise((resolve, _) => {
+			setTimeout(() => {
+				// this.client.close();
+				resolve((0, lodash_1.uniq)(this.devices));
+			}, this.discoverTime);
+		});
+	}
+	parseDeviceServer(device) {
+		return __awaiter(this, void 0, void 0, function* () {
+			try {
+				const { data } = yield axios_1.default.get(device);
+				const json = JSON.parse(parser.toJson(data));
+				return { msg: "ok", data: json };
+			} catch (e) {
+				return { msg: "fail", err: e };
+			}
+		});
+	}
+	play(targetUrl, mediaUrl) {
+		return __awaiter(this, void 0, void 0, function* () {
+			const content = `<s:Envelope s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" xmlns:u="urn:schemas-upnp-org:service:AVTransport:1">
+    <s:Body>
+        <u:SetAVTransportURI>
+            <InstanceID>0</InstanceID>
+            <CurrentURI>${mediaUrl}</CurrentURI>
+            <CurrentURIMetaData>&lt;DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sec="http://www.sec.co.kr/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&gt;&lt;item id="f-0" parentID="0" restricted="0"&gt;&lt;dc:title&gt;Video&lt;/dc:title&gt;&lt;dc:creator&gt;Anonymous&lt;/dc:creator&gt;&lt;upnp:class&gt;object.item.videoItem&lt;/upnp:class&gt;&lt;res protocolInfo="http-get:*:video/*:DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000" sec:URIType="public"&gt;%@&lt;/res&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;</CurrentURIMetaData>
+        </u:SetAVTransportURI>
+    </s:Body>
+</s:Envelope>`;
+			try {
+				const result = yield axios_1.default.post(targetUrl, content, {
+					headers: {
+						"Content-Type": "text/xml;charset=*utf-8*",
+						SOAPACTION:
+							'"urn:schemas-upnp-org:service:AVTransport:1#SetAVTransportURI"',
+					},
+				});
+				if (result.status === 200) {
+					return { msg: "ok", data: JSON.parse(parser.toJson(result.data)) };
+				} else {
+					return { msg: "other" };
+				}
+			} catch (e) {
+				return { msg: "fail", err: e };
+			}
+		});
+	}
+	getPlayInfo(targetUrl) {
+		return __awaiter(this, void 0, void 0, function* () {
+			const content = `<s:Envelope s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" xmlns:u="urn:schemas-upnp-org:service:AVTransport:1">
+    <s:Body>
+        <u:GetMediaInfo>
+            <InstanceID>0</InstanceID>
+        </u:GetMediaInfo>
+    </s:Body>
+</s:Envelope>
+`;
+			try {
+				const res = yield axios_1.default.post(targetUrl, content, {
+					headers: {
+						"Content-Type": "text/xml;charset=*utf-8*",
+						SOAPACTION:
+							'"urn:schemas-upnp-org:service:AVTransport:1#GetMediaInfo"',
+					},
+				});
+				if (res.status === 200) {
+					return { msg: "ok", data: JSON.parse(parser.toJson(res.data)) };
+				} else {
+					return { msg: "other" };
+				}
+			} catch (_a) {
+				return { msg: "not have info" };
+			}
+		});
+	}
+}
+exports.default = Upnp;
+// instance
+// 	.play(
+// 		"http://192.168.31.200:49152/_urn:schemas-upnp-org:service:AVTransport_control",
+// 		"http://192.168.31.169:8080/123.mp4"
+// 	)
+// 	.then((r) => console.log(r));
+// instance
+// 	.getPlayInfo(
+// 		"http://192.168.31.200:49152/_urn:schemas-upnp-org:service:AVTransport_control"
+// 	)
+// 	.then((r) => console.log(r));
