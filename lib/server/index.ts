@@ -2,6 +2,7 @@ import * as express from "express";
 import Upnp from "../upnp";
 import * as bodyParser from "body-parser";
 import debug from "debug";
+import * as fs from "fs";
 
 const console = debug("app:server");
 
@@ -71,6 +72,19 @@ app.post("/currentmedia", async (req, res) => {
 		res.status(500);
 		return res.send({ msg: "error", err: "service error" });
 	}
+});
+
+// check file exist
+app.post("/generator", async (req, res) => {
+	const { path } = req.body;
+	fs.stat(path, (err, _) => {
+		if (!err) {
+			res.status(200);
+			return res.send({ msg: "ok", url: `file://${path}` });
+		}
+		res.status(403);
+		return res.send({ msg: "error", err: "file not found" });
+	});
 });
 
 export default app;

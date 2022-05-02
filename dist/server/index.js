@@ -37,6 +37,7 @@ const express = require("express");
 const upnp_1 = require("../upnp");
 const bodyParser = require("body-parser");
 const debug_1 = require("debug");
+const fs = require("fs");
 const console = (0, debug_1.default)("app:server");
 const upnp = new upnp_1.default();
 const app = express();
@@ -106,6 +107,20 @@ app.post("/currentmedia", (req, res) =>
 			res.status(500);
 			return res.send({ msg: "error", err: "service error" });
 		}
+	})
+);
+// check file exist
+app.post("/generator", (req, res) =>
+	__awaiter(void 0, void 0, void 0, function* () {
+		const { path } = req.body;
+		fs.stat(path, (err, _) => {
+			if (!err) {
+				res.status(200);
+				return res.send({ msg: "ok", url: `file://${path}` });
+			}
+			res.status(403);
+			return res.send({ msg: "error", err: "file not found" });
+		});
 	})
 );
 exports.default = app;

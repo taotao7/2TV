@@ -21,6 +21,7 @@ specifiers:
   husky: '>=7'
   lint-staged: '>=10'
   lodash: ^4.17.21
+  mri: ^1.2.0
   nodemon: ^2.0.16
   prettier: '>=2'
   typescript: ^4.6.3
@@ -32,6 +33,7 @@ dependencies:
   body-parser: 1.20.0
   express: 4.18.1
   lodash: 4.17.21
+  mri: 1.2.0
   xml2json: 0.12.0
 
 devDependencies:
@@ -2246,6 +2248,11 @@ packages:
   /minimist/1.2.6:
     resolution: {integrity: sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==}
     dev: true
+
+  /mri/1.2.0:
+    resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
+    engines: {node: '>=4'}
+    dev: false
 
   /ms/2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}

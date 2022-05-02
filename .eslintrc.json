@@ -1,5 +1,10 @@
 {
   "root": true,
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
   "parserOptions": {
     "ecmaVersion": 7,
     "sourceType": "module"
@@ -12,6 +17,7 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
-    "comma-dangle": 0
+    "comma-dangle": 0,
+    "@typescript-eslint/no-var-requires": 0
   }
 }
