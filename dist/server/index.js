@@ -44,6 +44,7 @@ const app = express();
 // middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use("/", express.static("public"));
 // get discovery devices
 app.get("/getdevices", (_, res) =>
 	__awaiter(void 0, void 0, void 0, function* () {

@@ -12,6 +12,7 @@ const app = express();
 // middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use("/", express.static("public"));
 
 // get discovery devices
 app.get("/getdevices", async (_, res) => {
