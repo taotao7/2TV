@@ -34,6 +34,7 @@ var __awaiter =
 	};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
+const cors = require("cors");
 const upnp_1 = require("../upnp");
 const bodyParser = require("body-parser");
 const debug_1 = require("debug");
@@ -46,6 +47,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use("/", express.static(path.join(__dirname, "../../public")));
+app.use(cors());
 // get discovery devices
 app.get("/getdevices", (_, res) =>
 	__awaiter(void 0, void 0, void 0, function* () {

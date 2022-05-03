@@ -6,10 +6,14 @@ TV casting software based on UPNP
 
 Use express as server, convenient to use terminal mode or electron mode
 
+## Front
+
+vite + react + tailwind
+
 ## TODO
 
 - [ ] electron
-- [ ] react ui
+- [ ] react front
 
 ## Contribution
 

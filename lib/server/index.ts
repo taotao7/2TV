@@ -1,4 +1,5 @@
 import * as express from "express";
+import * as cors from "cors";
 import Upnp from "../upnp";
 import * as bodyParser from "body-parser";
 import debug from "debug";
@@ -14,6 +15,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use("/", express.static(path.join(__dirname, "../../public")));
+app.use(cors());
 
 // get discovery devices
 app.get("/getdevices", async (_, res) => {

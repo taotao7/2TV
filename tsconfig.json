@@ -13,6 +13,9 @@
     ],
     "outDir": "./dist"
   },
+  "include": [
+    "lib/**/*.ts"
+  ],
   "exclude": [
     "node_modules",
     "ui/**/*.ts"
