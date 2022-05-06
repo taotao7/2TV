@@ -53,16 +53,14 @@ app.get("/getdevices", (_, res) =>
 	__awaiter(void 0, void 0, void 0, function* () {
 		try {
 			const devices = yield upnp.getDevicesList();
-			res.status(200);
 			console("devices list: ", devices);
 			if (devices.length != 0) {
-				return res.send({ msg: "ok", data: devices });
+				return res.status(200).send({ msg: "ok", data: devices });
 			}
 			return res.send({ msg: "error", data: "no devices" });
 		} catch (err) {
 			console(err);
-			res.status(500);
-			return res.send({ msg: "error", err: "service error" });
+			return res.status(500).send({ msg: "error", err: "service error" });
 		}
 	})
 );
@@ -73,12 +71,10 @@ app.post("/parse", (req, res) =>
 		try {
 			const deviceDesc = yield upnp.parseDeviceServer(device);
 			console("parse:", deviceDesc);
-			res.status(200);
-			return res.send(deviceDesc);
+			return res.status(200).send(deviceDesc);
 		} catch (err) {
 			console(err);
-			res.status(500);
-			return res.send({ msg: "error", err: "service error" });
+			return res.status(500).send({ msg: "error", err: "service error" });
 		}
 	})
 );
@@ -90,12 +86,10 @@ app.post("/play", (req, res) =>
 		try {
 			const result = yield upnp.play(device, url);
 			console("play:", result);
-			res.status(200);
-			return res.send(result);
+			return res.status(200).send(result);
 		} catch (err) {
 			console(err);
-			res.status(500);
-			return res.send({ msg: "error", err: "service error" });
+			return res.status(500).send({ msg: "error", err: "service error" });
 		}
 	})
 );
@@ -104,27 +98,31 @@ app.post("/currentmedia", (req, res) =>
 		const { device } = req.body;
 		try {
 			const result = yield upnp.getPlayInfo(device);
-			res.status(200);
-			return res.send(result);
+			return res.status(200).send(result);
 		} catch (err) {
 			console(err);
-			res.status(500);
-			return res.send({ msg: "error", err: "service error" });
+			return res.status(500).send({ msg: "error", err: "service error" });
 		}
 	})
 );
 // check file exist
-app.post("/generator", (req, res) =>
+app.post("/checkfile", (req, res) =>
 	__awaiter(void 0, void 0, void 0, function* () {
 		const { path } = req.body;
 		fs.stat(path, (err, _) => {
 			if (!err) {
-				res.status(200);
-				return res.send({ msg: "ok", url: `file://${path}` });
+				return res.status(200).send({ msg: "ok" });
 			}
-			res.status(403);
-			return res.send({ msg: "error", err: "file not found" });
+			return res.status(403).send({ msg: "error", err: "file not found" });
 		});
 	})
 );
+// local file
+app.get("/localmedia", (req, res) => {
+	const { path } = req.query;
+	if (typeof path === "string") {
+		return res.status(200).sendFile(path);
+	}
+	return res.status(403).send({ msg: "error", err: "file not found" });
+});
 exports.default = app;
